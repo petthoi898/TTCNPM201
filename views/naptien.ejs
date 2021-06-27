@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Meal &mdash; Website Template by Colorlib</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link href="https://fonts.googleapis.com/css?family=Playfair+Display:300,400,700,800|Open+Sans:300,400,700"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/animate.css">
+  <link rel="stylesheet" href="css/owl.carousel.min.css">
+
+  <link rel="stylesheet" href="css/magnific-popup.css">
+  <link rel="stylesheet" href="css/aos.css">
+
+  <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+  <link rel="stylesheet" href="css/jquery.timepicker.css">
+
+  <link rel="stylesheet" href="fonts/ionicons/css/ionicons.min.css">
+  <link rel="stylesheet" href="fonts/fontawesome/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="fonts/flaticon/font/flaticon.css">
+
+  <!-- Theme Style -->
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body class="bg-light">
+
+  <body data-spy="scroll" data-target="#ftco-navbar-spy" data-offset="0">
+
+    <div class="site-wrap">
+<!-- nav bar -->
+<%- include("function/navbar.ejs") %>
+
+
+     
+
+
+       <!-- .section Nạp tiền -->
+
+        <div class="section pb-3 bg-white" id="section-naptien" data-aos="fade-up">
+          <div class="container">
+            <div class="row align-items-center justify-content-center">
+              <div class="col-md-12 col-lg-8 section-heading">
+                <h3 style="text-align: center; color: red;" class="heading mb-5"><%= status %> </h3>
+                <button class="btn btn-primary" onclick="naptienvnpay()" id="btnvnpay">Nạp tiền bằng VnPay</button>
+                <button class="btn btn-success" onclick="naptienbangthe()" style="display: none;" id="btnthe">Nạp tiền bằng thẻ</button>
+
+                <form style="display: none;" action="naptienvnpay" method="post" id="naptienvnpay">
+                  <label for="">Nạp tiền bằng VNPay</label>
+                  <input class="form-control" type="number" name="amount" placeholder="Nhập số tiền" id="">
+                  <button class="btn btn-success" type="submit">Xác nhận</button>
+                </form>
+                <form method="" action="" id="formnaptien">
+                  <div class="form-group">
+                    <label for="">Số tiền</label>
+                    <input type="number" name="amount" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter pass">
+                    <label for="">Mật khẩu</label>
+                    <input type="password" name="password" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter pass">
+                    <label for="">Tên ngân hàng</label>
+                    <select class="form-control" name="idbankcard" id="sel1">
+                
+                   <%  card.forEach(element => { %>
+                    <option value=" <%- element.idbankcard %> "> <%- element.bankname %> - <%- element.namecard %> - <%- element.idbankcard %> </option>
+                      
+                      
+                    <% }); %>
+                  </select>
+                
+                  </div>
+                 
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div> <!-- .section -->
+      </div> <!-- .section -->
+      <script>
+        function naptienvnpay(){
+          $('#formnaptien').hide(500);
+          $('#naptienvnpay').show(500);
+          $('#btnvnpay').hide(500);
+          $('#btnthe').show(500);
+          
+        }
+        function naptienbangthe(){
+          $('#formnaptien').show(500);
+          $('#naptienvnpay').hide(500);
+          $('#btnvnpay').show(500);
+          $('#btnthe').hide(500);
+
+        }
+      </script>
+
+    <div class="map-wrap" id="map" data-aos="fade" style="background-color: white;"></div>
+
+
+    <%- include("function/footer.ejs") %>
+      <script>
+        $('#formnaptien').submit(function name(params) {
+          var that = $(this);
+          $.ajax({
+            url:'/postnaptien', type:'post', data: that.serialize(), success: function name(result) {
+              if(result == 'nan'){
+                $("#status").html('Số tiền không đúng định dạng');
+                   document.getElementsByName('amount').value = '';
+                   
+              } else if(result == 'err'){
+                $("#status").html('Có lỗi trong quá trình xử lý');
+                   document.getElementsByName('amount').value = '';
+                  
+              } else if(result == 'wrongpass'){
+                $("#status").html('Sai mật khẩu');
+                   document.getElementsByName('amount').value = '';
+                  
+              }else if(result == 'success'){
+                $("#status").html('Nạp tiền thành công');
+                   document.getElementsByName('amount').value = '';
+                   
+              } else if(result == 'lessthan10k') {
+                $("#status").html('Số tiền nạp phải lớn hơn 10.000 vnđ');
+                   document.getElementsByName('amount').value = '';
+                  
+              }
+               else if(result == 'morethan10m') {
+                $("#status").html('Số tiền 1 lần nạp không được nhiều hơn 10.000.000 vnđ');
+                   document.getElementsByName('amount').value = '';
+                  
+              }
+               else if(result == 'selectbank') {
+                $("#status").html('Chưa chọn ngân hàng');
+                   document.getElementsByName('amount').value = '';
+                  
+              }
+              else {
+                $("#status").html('Error code');
+                   document.getElementsByName('amount').value = '';
+                  
+              }
+            
+            }
+          })
+          return false;
+        })
+      </script>
+      <%- include('function/js/noti') %>
+  </body>
+
+</html>
